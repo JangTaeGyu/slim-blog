@@ -29,7 +29,6 @@
     },
     "require-dev": {
         "robmorgan/phinx": "^0.10.7",
-        "runcmf/runtracy": "^0.2.10",
-        "symfony/var-dumper": "^4.2"
+        "runcmf/runtracy": "^0.2.10"
     }
 }

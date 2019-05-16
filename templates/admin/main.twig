@@ -1,8 +1,7 @@
-{% extends "layout/app.twig" %}
+{% extends "layout/admin_app.twig" %}
 
 {% block title %}관리자 메인 페이지{% endblock %}
 
 {% block content %}
-    <a class="nav-link" href="{{ path_for('blog.admin.logout') }}">로그아웃</a>
-    관리자 메인 페이지
+    <h1>관리자 메인 페이지</h1>
 {% endblock %}

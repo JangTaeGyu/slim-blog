@@ -13,5 +13,11 @@ return function (\Slim\App $app) {
     $app->group('/admin', function ($app) {
         $app->get('/logout', \App\Controllers\AuthController::class . ':logout')->setName('blog.admin.logout');
         $app->get('/main', \App\Controllers\AdminMainController::class . ':main')->setName('blog.admin.main');
+
+        $app->get('/categories', \App\Controllers\AdminCategoryController::class . ':index')->setName('blog.admin.category.index');
+        $app->post('/categories', \App\Controllers\AdminCategoryController::class . ':store')->setName('blog.admin.category.store');
+        $app->put('/categories', \App\Controllers\AdminCategoryController::class . ':update')->setName('blog.admin.category.update');
+        $app->delete('/categories', \App\Controllers\AdminCategoryController::class . ':destroy')->setName('blog.admin.category.destroy');
+
     })->add(\App\Middlewares\AuthMiddleware::class);
 };
