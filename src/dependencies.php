@@ -8,6 +8,11 @@ return function (\Slim\App $app) {
         return new Twig_Profiler_Profile();
     };
 
+    // slim/csrf
+    $container['csrf'] = function ($container) {
+        return new \Slim\Csrf\Guard;
+    };
+
     // slim/twig-view
     $container['view'] = function ($container) {
         $twig = $container->get('settings')['twig'];
@@ -30,6 +35,14 @@ return function (\Slim\App $app) {
 
         return $view;
     };
+
+    // respect/validation
+    $container['validator'] = function ($container) {
+        return new \App\Validation\Validator($container);
+    };
+
+    // respect/validation
+    \Respect\Validation\Validator::with('App\Validation\Rules', true);
 
     // illuminate/database
     $capsule = new \Illuminate\Database\Capsule\Manager;

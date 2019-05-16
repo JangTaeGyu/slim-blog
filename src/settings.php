@@ -8,6 +8,8 @@ return [
             'path' => dirname(__DIR__) . '/templates',
             'cache' => false,
             'extensions' => [
+                \App\Twig\FormExtension::class,
+                \App\Twig\CsrfExtension::class
             ]
         ],
         'db' => [

@@ -1,0 +1,9 @@
+{% extends "layout/app.twig" %}
+
+{% block title %}로그인{% endblock %}
+
+{% block content %}
+    {{ form_open('PUT', {name: 'formSignIn'}) }}
+    로그인
+    {{ form_close() }}
+{% endblock %}
