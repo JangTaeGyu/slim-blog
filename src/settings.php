@@ -9,7 +9,8 @@ return [
             'cache' => false,
             'extensions' => [
                 \App\Twig\FormExtension::class,
-                \App\Twig\CsrfExtension::class
+                \App\Twig\CsrfExtension::class,
+                \App\Twig\SessionExtension::class,
             ]
         ],
         'db' => [

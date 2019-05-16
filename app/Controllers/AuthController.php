@@ -39,4 +39,46 @@ class AuthController extends Controller
     {
         return $this->view->render($response, 'admin/auth/signin.twig');
     }
+
+    public function signInAction(Request $request, Response $response): Response
+    {
+        $validation = $this->validator->validate($request, [
+            'email' => v::noWhitespace()->notEmpty()->email(),
+            'password' => v::noWhitespace()->notEmpty()->length(4, 16),
+        ]);
+
+        if ($validation->failed()) {
+            return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
+        }
+
+        $errors = [];
+
+        $user = User::where('email', $request->getParam('email'))->first();
+        if (is_null($user)) {
+            $errors = array_merge($errors, ['email' => ['일치하는 회원이 없습니다.']]);
+        } else {
+            if (!password_verify($request->getParam('password'), $user->password)) {
+                $errors = array_merge($errors, ['password' => ['비밀번호가 일치하지 않습니다.']]);
+            }
+        }
+
+        if (count($errors) > 0) {
+            $this->session->set('errors', $errors);
+
+            return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
+        }
+
+        $this->session->set('user', ['email' => $user->email, 'name' => $user->name]);
+
+        return $response->withRedirect($this->router->pathFor('blog.admin.main'));
+    }
+
+    public function logout(Request $request, Response $response): Response
+    {
+        if ($this->session->has('user')) {
+            $this->session->delete('user');
+        }
+
+        return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
+    }
 }
