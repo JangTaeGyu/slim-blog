@@ -16,8 +16,8 @@ return function (\Slim\App $app) {
 
         $app->get('/categories', \App\Controllers\AdminCategoryController::class . ':index')->setName('blog.admin.category.index');
         $app->post('/categories', \App\Controllers\AdminCategoryController::class . ':store')->setName('blog.admin.category.store');
-        $app->put('/categories', \App\Controllers\AdminCategoryController::class . ':update')->setName('blog.admin.category.update');
-        $app->delete('/categories', \App\Controllers\AdminCategoryController::class . ':destroy')->setName('blog.admin.category.destroy');
+        $app->put('/categories/{category_id:[0-9]+}', \App\Controllers\AdminCategoryController::class . ':update')->setName('blog.admin.category.update');
+        $app->delete('/categories/{category_id:[0-9]+}', \App\Controllers\AdminCategoryController::class . ':destroy')->setName('blog.admin.category.destroy');
 
     })->add(\App\Middlewares\AuthMiddleware::class);
 };

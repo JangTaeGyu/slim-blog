@@ -43,7 +43,7 @@ class AdminCategoryController extends Controller
             return $response->withRedirect($this->router->pathFor('blog.admin.category.index'));
         }
 
-        $category = Category::find($request->getParam('category_id'));
+        $category = Category::find($request->getAttribute('category_id'));
         if (is_null($category)) {
             $this->session->set('fail', '카테고리 정보가 없습니다.');
         } else {
@@ -64,7 +64,7 @@ class AdminCategoryController extends Controller
             return $response->withRedirect($this->router->pathFor('blog.admin.category.index'));
         }
 
-        $category = Category::find($request->getParam('category_id'));
+        $category = Category::find($request->getAttribute('category_id'));
         if (is_null($category)) {
             $this->session->set('fail', '카테고리 정보가 없습니다.');
         } else {

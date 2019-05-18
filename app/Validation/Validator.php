@@ -19,7 +19,12 @@ class Validator
     {
         foreach ($rules as $field => $rule) {
             try {
-                $rule->setName(ucfirst($field))->assert($request->getParam($field));
+                $param = $request->getParam($field);
+                if (is_null($param)) {
+                    $param = $request->getAttribute($field);
+                }
+
+                $rule->setName(ucfirst($field))->assert($param);
             } catch (\Respect\Validation\Exceptions\NestedValidationException $e) {
                 $this->errors[$field] = $e->getMessages();
             }

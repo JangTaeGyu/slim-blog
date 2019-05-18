@@ -29,16 +29,14 @@
     <ul>
         {% for category in categories %}
         <li>
-        {{ form_open('PUT', { action: path_for('blog.admin.category.update') }) }}
+        {{ form_open('PUT', { action: path_for('blog.admin.category.update', { category_id: category.id }) }) }}
             {{ csrf_input | raw }}
-            <input type="hidden" name="category_id" value="{{ category.id }}">
             <input type="text" name="category_name" id="category_name" value="{{ category.name }}">
             <button type="submit">수정하기</button>
         {{ form_close() }}
 
-        {{ form_open('DELETE', { action: path_for('blog.admin.category.destroy') }) }}
+        {{ form_open('DELETE', { action: path_for('blog.admin.category.destroy', { category_id: category.id }) }) }}
             {{ csrf_input | raw }}
-            <input type="hidden" name="category_id" value="{{ category.id }}">
             <button type="submit">삭제하기</button>
         {{ form_close() }}
         </li>
