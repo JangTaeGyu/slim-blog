@@ -1,0 +1,61 @@
+{% extends "layout/admin_app.twig" %}
+
+{% block title %}회원 수정{% endblock %}
+
+{% block content %}
+<h1>회원 수정</h1>
+{{ form_open('PUT', { action: path_for('blog.admin.user.update', { user_id: user.id }) }) }}
+    {{ csrf_input() }}
+    <table border="1">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ user.id }}</td>
+            </tr>
+            <tr>
+                <th>이름</th>
+                <td>{{ user.name }}</td>
+            </tr>
+            <tr>
+                <th>이메일</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>승인여부</th>
+                <td>
+                    <select name="approved">
+                        <option value="1" {{ user.approved == true ? 'selected' }}>승인</option>
+                        <option value="0" {{ user.approved == false ? 'selected' }}>미승인</option>
+                    </select>
+                    {% if errors.approved %}
+                        <small>{{ errors.approved | first }}</small>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>비밀번호</th>
+                <td>
+                    <input type="password" name="password" id="password">
+                    {% if errors.password %}
+                        <small>{{ errors.password | first }}</small>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>비밀번호 확인</th>
+                <td>
+                    <input type="password" name="password_confirmation" id="password_confirmation">
+                    {% if errors.password_confirmation %}
+                        <small>{{ errors.password_confirmation | first }}</small>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>등록일자</th>
+                <td>{{ user.created_at }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="submit">수정하기</button>
+{{ form_close() }}
+{% endblock %}

@@ -12,7 +12,7 @@ class AdminCategoryController extends Controller
     {
         $categories = Category::all();
 
-        return $this->view->render($response, 'admin/category/index.twig', ['categories' => $categories]);
+        return $this->view->render($response, 'admin/category/index.twig', compact('categories'));
     }
 
     public function store(Request $request, Response $response): Response
