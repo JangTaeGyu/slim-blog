@@ -1,6 +1,6 @@
-# Slim Framework를 활용한 블로그 만들기
+# Slim Framework 이용한 블로그 만들기
 
-Slim Framework와 여러 라이브러리를 활용한 블로그만들기 입니다.
+![블로그 메인 샘플 이미지](./public/images/sample.png)
 
 ## 설치하기
 
