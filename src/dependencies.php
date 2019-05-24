@@ -47,8 +47,14 @@ return function (\Slim\App $app) {
     // illuminate/database
     $capsule = new \Illuminate\Database\Capsule\Manager;
     $capsule->addConnection($container->get('settings')['db']);
+
+    // illuminate/events
+    $capsule->setEventDispatcher(new \Illuminate\Events\Dispatcher(new \Illuminate\Container\Container));
+
     $capsule->setAsGlobal();
     $capsule->bootEloquent();
+
+    // runcmf/runtracy
     $capsule::connection()->enableQueryLog();
 
     // $_SESSION

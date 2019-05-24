@@ -2,6 +2,7 @@
     <li><a href="{{ path_for('blog.admin.main') }}">메인</li>
     <li><a href="{{ path_for('blog.admin.category.index') }}">카테고리</li>
     <li><a href="{{ path_for('blog.admin.user.index') }}">회원</li>
+    <li><a href="{{ path_for('blog.admin.guestbook.index') }}">방명록</li>
     {% if session.has('user') %}
     <li><a class="nav-link" href="{{ path_for('blog.admin.logout') }}">로그아웃</a></li>
     {% endif %}

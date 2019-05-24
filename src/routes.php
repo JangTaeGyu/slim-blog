@@ -23,5 +23,12 @@ return function (\Slim\App $app) {
         $app->get('/users/{user_id:[0-9]+}/edit', \App\Controllers\AdminUserController::class . ':edit')->setName('blog.admin.user.edit');
         $app->put('/users/{user_id:[0-9]+}', \App\Controllers\AdminUserController::class . ':update')->setName('blog.admin.user.update');
         $app->delete('/users/{user_id:[0-9]+}', \App\Controllers\AdminUserController::class . ':destroy')->setName('blog.admin.user.destroy');
+
+        $app->get('/guestbooks', \App\Controllers\AdminGuestBookController::class . ':index')->add(\App\Middlewares\PaginationMiddleware::class)->setName('blog.admin.guestbook.index');
+        $app->get('/guestbooks/trash', \App\Controllers\AdminGuestBookController::class . ':index')->add(\App\Middlewares\PaginationMiddleware::class)->setName('blog.admin.guestbook.trash');
+        $app->get('/guestbooks/{parent_id:[0-9]+}/create', \App\Controllers\AdminGuestBookController::class . ':create')->setName('blog.admin.guestbook.create');
+        $app->post('/guestbooks/{parent_id:[0-9]+}', \App\Controllers\AdminGuestBookController::class . ':store')->setName('blog.admin.guestbook.store');
+        $app->put('/guestbooks/{guestbook_id:[0-9]+}', \App\Controllers\AdminGuestBookController::class . ':update')->setName('blog.admin.guestbook.update');
+        $app->delete('/guestbooks/{guestbook_id:[0-9]+}', \App\Controllers\AdminGuestBookController::class . ':destroy')->setName('blog.admin.guestbook.destroy');
     })->add(\App\Middlewares\AuthMiddleware::class);
 };

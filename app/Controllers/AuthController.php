@@ -68,7 +68,11 @@ class AuthController extends Controller
             return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
         }
 
-        $this->session->set('user', ['email' => $user->email, 'name' => $user->name]);
+        $this->session->set('user', [
+            'id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name
+        ]);
 
         return $response->withRedirect($this->router->pathFor('blog.admin.main'));
     }
