@@ -19,6 +19,13 @@ return function (\Slim\App $app) {
         $app->put('/categories/{category_id:[0-9]+}', \App\Controllers\AdminCategoryController::class . ':update')->setName('blog.admin.category.update');
         $app->delete('/categories/{category_id:[0-9]+}', \App\Controllers\AdminCategoryController::class . ':destroy')->setName('blog.admin.category.destroy');
 
+        $app->get('/notices', \App\Controllers\AdminNoticeController::class . ':index')->add(\App\Middlewares\PaginationMiddleware::class)->setName('blog.admin.notice.index');
+        $app->get('/notices/create', \App\Controllers\AdminNoticeController::class . ':create')->setName('blog.admin.notice.create');
+        $app->get('/notices/{notice_id:[0-9]+}/edit', \App\Controllers\AdminNoticeController::class . ':edit')->setName('blog.admin.notice.edit');
+        $app->post('/notices', \App\Controllers\AdminNoticeController::class . ':store')->setName('blog.admin.notice.store');
+        $app->put('/notices/{notice_id:[0-9]+}', \App\Controllers\AdminNoticeController::class . ':update')->setName('blog.admin.notice.update');
+        $app->delete('/notices/{notice_id:[0-9]+}', \App\Controllers\AdminNoticeController::class . ':destroy')->setName('blog.admin.notice.destroy');
+
         $app->get('/users', \App\Controllers\AdminUserController::class . ':index')->add(\App\Middlewares\PaginationMiddleware::class)->setName('blog.admin.user.index');
         $app->get('/users/{user_id:[0-9]+}/edit', \App\Controllers\AdminUserController::class . ':edit')->setName('blog.admin.user.edit');
         $app->put('/users/{user_id:[0-9]+}', \App\Controllers\AdminUserController::class . ':update')->setName('blog.admin.user.update');

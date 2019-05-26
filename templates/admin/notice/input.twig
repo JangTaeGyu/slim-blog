@@ -1,0 +1,65 @@
+{% extends "layout/admin_app.twig" %}
+
+{% set title = notice ? '공지수정' : '공지쓰기' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    {% if notice %}
+        {{ form_open('PUT', { action: path_for('blog.admin.notice.update', { notice_id: notice.id }) }) }}
+    {% else %}
+        {{ form_open('POST', { action: path_for('blog.admin.notice.store') }) }}
+    {% endif %}
+
+        {{ csrf_input() }}
+
+        <table border="1">
+            <tbody>
+                <tr>
+                    <th>제목</th>
+                    <td>
+                        <input type="text" name="title" value="{{ old.title ? old.title : notice.title }}">
+                        {% if errors.title %}
+                            <small>{{ errors.title | first }}</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea name="content" cols="50" rows="5">{{ old.content ? old.content : notice.content }}</textarea>
+                        {% if errors.content %}
+                            <small>{{ errors.content | first }}</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>권한</th>
+                    <td>
+                        <label><input type="checkbox" name="accept_commnet" value="1" {{ old.accept_commnet == 1 or notice.accept_commnet == 1 ? 'checked' }}> 댓글 허용</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>승인</th>
+                    <td>
+                        {% set approved = old.approved ? old.approved : notice.approved %}
+                        <label><input type="radio" name="approved" value="1" {{ approved == 1 ? 'checked' }}> 공개</label>
+                        <label><input type="radio" name="approved" value="0" {{ approved == 0 ? 'checked' }}> 비공개</label>
+                        {% if errors.approved %}
+                            <small>{{ errors.approved | first }}</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if notice %}
+                <tr>
+                    <th>등록일자</th>
+                    <td>{{ notice.created_at }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <button type="submit">{{ notice ? '수정하기' : '저장하기' }}</button>
+    {{ form_close() }}
+{% endblock %}

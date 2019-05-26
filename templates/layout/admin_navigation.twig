@@ -1,6 +1,7 @@
 <ul>
     <li><a href="{{ path_for('blog.admin.main') }}">메인</li>
     <li><a href="{{ path_for('blog.admin.category.index') }}">카테고리</li>
+    <li><a href="{{ path_for('blog.admin.notice.index') }}">공지사항</li>
     <li><a href="{{ path_for('blog.admin.user.index') }}">회원</li>
     <li><a href="{{ path_for('blog.admin.guestbook.index') }}">방명록</li>
     {% if session.has('user') %}

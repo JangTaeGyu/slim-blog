@@ -1,0 +1,67 @@
+{% extends "layout/admin_app.twig" %}
+
+{% set csrf_input = csrf_input() %}
+
+{% block title %}공지사항{% endblock %}
+
+{% block style %}
+    <style>
+        .pagination { list-style: none; padding: 0; margin: 0; }
+        .pagination > li { display: inline-block; padding: 0 5px; }
+        .pagination > li > a { text-decoration: none; }
+        .pagination > li.active > span { font-size: 18px; font-weight: bold; }
+        form { display: inline-block; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>공지사항</h1>
+
+    {{ form_open('GET', { action: path_for('blog.admin.notice.create') }) }}
+        <button type="submit">공지쓰기</button>
+    {{ form_close() }}
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>제목</th>
+                <th>작성일자</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if notices.total == 0 %}
+            <tr>
+                <td colspan="4">아직 등록된 공지가 없습니다.</td>
+            </tr>
+        {% else %}
+            {% for notice in notices %}
+            <tr>
+                <td>{{ notice.id }}</td>
+                <td>
+                    <a href="{{ path_for('blog.admin.notice.edit', { notice_id: notice.id }) }}">{{ notice.title }}</a>
+                    {% if notice.count > 0 %}
+                        <small>{{ notice.count }}</small>
+                    {% endif %}
+                </td>
+                <td>{{ notice.created_at }}</td>
+                <td>
+                    {{ form_open('GET', { action: path_for('blog.admin.notice.edit', { notice_id: notice.id }) }) }}
+                        {{ csrf_input | raw }}
+                        <button type="submit">수정하기</button>
+                    {{ form_close() }}
+
+                    {{ form_open('DELETE', { action: path_for('blog.admin.notice.destroy', { notice_id: notice.id }) }) }}
+                        {{ csrf_input | raw }}
+                        <button type="submit">삭제하기</button>
+                    {{ form_close() }}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+
+    {{ notices.links('pagination/default.twig') | raw }}
+{% endblock %}

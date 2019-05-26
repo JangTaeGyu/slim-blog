@@ -8,11 +8,15 @@ class CommentTable extends Migration
     {
         $this->schema->create('comments', function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->increments('id');
+            $table->integer('parent_id')->nullable()->unsigned();
+            $table->integer('user_id')->nullable()->unsigned();
             $table->string('name');
-            $table->string('email');
+            $table->string('password', 60)->nullable();
             $table->text('comment');
             $table->boolean('approved');
-            $table->integer('post_id')->unsigned();
+            $table->enum('target', ['posts', 'notices']);
+            $table->integer('target_id')->unsigned();
+            $table->ipAddress('ip');
             $table->timestamps();
         });
     }
