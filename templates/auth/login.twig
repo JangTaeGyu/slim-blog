@@ -1,0 +1,43 @@
+{% extends "layout/panel.twig" %}
+
+{% block title %} :: 로그인{% endblock %}
+
+{% block content %}
+<div id="main" class="panel">
+    <div class="inner">
+        <div>
+            {% if session.has('fail') %}
+                <p>{{ session.flash('fail') }}</p>
+            {% endif %}
+
+            <h2 class="title">블로그에 로그인 하세요.</h2>
+            <div class="bg form-box">
+
+                {{ form_open('POST', { action: path_for('blog.auth.login.action') }) }}
+                    {{ csrf_input() }}
+
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i>이메일</label>
+                        <input type="text" name="email" id="email" class="form-control" value="{{ old.email }}" placeholder="이메일을 입력해 주세요.">
+                        {% if errors.email %}
+                            <small class="error">{{ errors.email | first }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-lock"></i>비밀번호</label>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="비밀번호를 입력해 주세요.">
+                        {% if errors.password %}
+                            <small class="error">{{ errors.password | first }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn block large wet-asphalt">로그인</button>
+                    </div>
+
+                {{ form_close() }}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,39 +1,31 @@
 {% if paginator.hasPages() %}
-    <ul class="pagination">
+    <div class="pagination">
         {% if paginator.onFirstPage() %}
-            <li class="disabled">
-                <span>&lsaquo;</span>
-            </li>
+            <a href="javascript:void(0)" class="disabled">&lsaquo;</a>
         {% else %}
-            <li>
-                <a href="{{ paginator.previousPageUrl() }}">&lsaquo;</a>
-            </li>
+            <a href="{{ paginator.previousPageUrl() }}">&lsaquo;</a>
         {% endif %}
 
         {% for element in elements %}
             {% if element is string %}
-                <li class="disabled"><span>{{ element }}</span></li>
+                <a href="javascript:void(0)" class="disabled">{{ element }}</a>
             {% endif %}
 
             {% if element is iterable %}
                 {% for page, url in element %}
                     {% if page == paginator.currentPage() %}
-                        <li class="active"><span>{{ page }}</span></li>
+                        <a href="javascript:void(0)" class="active">{{ page }}</a>
                     {% else %}
-                        <li><a href="{{ url }}">{{ page }}</a></li>
+                        <a href="{{ url }}">{{ page }}</a>
                     {% endif %}
                 {% endfor %}
             {% endif %}
         {% endfor %}
 
         {% if paginator.hasMorePages() %}
-            <li>
-                <a href="{{ paginator.nextPageUrl() }}">&rsaquo;</a>
-            </li>
+            <a href="{{ paginator.nextPageUrl() }}">&rsaquo;</a>
         {% else %}
-            <li class="disabled">
-                <span>&rsaquo;</span>
-            </li>
+            <a href="javascript:void(0)" class="disabled">&rsaquo;</a>
         {% endif %}
-    </ul>
+    </div>
 {% endif %}

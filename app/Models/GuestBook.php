@@ -38,15 +38,15 @@ class GuestBook extends Model
 
         $session = new \App\Session\PHPSession;
 
-        self::creating(function ($buestbook) use ($session) {
+        static::creating(function ($guestbook) use ($session) {
             if ($session->has('user')) {
                 $user = $session->get('user');
 
-                $buestbook->user_id = $user['id'];
-                $buestbook->name = $user['name'];
+                $guestbook->user_id = $user['id'];
+                $guestbook->name = $user['name'];
             }
 
-            $buestbook->ip = $_SERVER['REMOTE_ADDR'];
+            $guestbook->ip = $_SERVER['REMOTE_ADDR'];
         });
     }
 }

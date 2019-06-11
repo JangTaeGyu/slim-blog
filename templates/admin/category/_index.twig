@@ -1,0 +1,45 @@
+{% extends "layout/admin_app.twig" %}
+
+{% block title %}카테고리 관리자{% endblock %}
+
+{% block style %}
+    <style>
+        form { display: inline-block; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>카테고리 관리자</h1>
+
+    {% set csrf_input = csrf_input() %}
+
+    {{ form_open('POST', { action: path_for('blog.admin.category.store') }) }}
+        {{ csrf_input | raw }}
+        <div>
+            <label for="category_name">카테고리 명칭</label>
+            <input type="text" name="category_name" id="category_name">
+            {% if errors.category_name %}
+                <small>{{ errors.category_name | first }}</small>
+            {% endif %}
+        </div>
+
+        <button type="submit">추가하기</button>
+    {{ form_close() }}
+
+    <ul>
+        {% for category in categories %}
+        <li>
+        {{ form_open('PUT', { action: path_for('blog.admin.category.update', { category_id: category.id }) }) }}
+            {{ csrf_input | raw }}
+            <input type="text" name="category_name" id="category_name" value="{{ category.name }}">
+            <button type="submit">수정하기</button>
+        {{ form_close() }}
+
+        {{ form_open('DELETE', { action: path_for('blog.admin.category.destroy', { category_id: category.id }) }) }}
+            {{ csrf_input | raw }}
+            <button type="submit">삭제하기</button>
+        {{ form_close() }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

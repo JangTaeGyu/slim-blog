@@ -1,0 +1,42 @@
+<div class="write">
+    <a href="javascript:void(0)" class="btn large block peter-river">글 쓰기</a>
+</div>
+<div id="lnb" class="bg">
+    <ul>
+        <li><a href="{{ path_for('blog.admin.main') }}" class="{{ is_current_path('blog.admin.main') ? 'active' }}"><i class="fas fa-home"></i>블로그 관리 홈</a></li>
+        <li><a href="javascript:void(0)" class="{{
+                is_current_path('blog.admin.category.index') or
+                is_current_path('blog.admin.notice.index') or
+                is_current_path('blog.admin.notice.create')
+                ? 'active' }}"><i class="far fa-file-alt"></i>콘텐츠</a>
+            <ul>
+                <li><a href="{{ path_for('blog.admin.category.index') }}"class="{{
+                    is_current_path('blog.admin.category.index')
+                    ? 'active' }}">카테고리 관리</a></li>
+                <li><a href="javascript:void(0)">글 관리</a></li>
+                <li><a href="{{ path_for('blog.admin.notice.index') }}" class="{{
+                    is_current_path('blog.admin.notice.index') or
+                    is_current_path('blog.admin.notice.create')
+                    ? 'active' }}">공지 관리</a></li>
+            </ul>
+        </li>
+        <li><a href="javascript:void(0)" class="{{
+                is_current_path('blog.admin.guestbook.index') or
+                is_current_path('blog.admin.guestbook.trash') or
+                is_current_path('blog.admin.comment.index') or
+                is_current_path('blog.admin.comment.trash')
+                ? 'active' }}"><i class="fas fa-comment"></i>댓글.방명록</a>
+            <ul>
+                <li><a href="{{ path_for('blog.admin.comment.index') }}" class="{{
+                    is_current_path('blog.admin.comment.index') or
+                    is_current_path('blog.admin.comment.trash')
+                    ? 'active' }}">댓글 관리</a></li>
+                <li><a href="{{ path_for('blog.admin.guestbook.index') }}" class="{{
+                    is_current_path('blog.admin.guestbook.index') or
+                    is_current_path('blog.admin.guestbook.trash')
+                    ? 'active' }}">방명록 관리</a></li>
+            </ul>
+        </li>
+        <li><a href="{{ path_for('blog.admin.user.index') }}" class="{{ is_current_path('blog.admin.user.index') ? 'active' }}"><i class="fas fa-users"></i>회원 관리</a></li>
+    </ul>
+</div>

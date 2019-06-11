@@ -1,54 +1,26 @@
 <?php
 namespace App\Controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Http\{ Request, Response };
 use Respect\Validation\Validator as v;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function signUp(Request $request, Response $response): Response
+    public function login(Request $request, Response $response): Response
     {
-        return $this->view->render($response, 'admin/auth/signup.twig');
+        return $this->view->render($response, 'auth/login.twig');
     }
 
-    public function signUpAction(Request $request, Response $response): Response
+    public function loginAction(Request $request, Response $response): Response
     {
         $validation = $this->validator->validate($request, [
-            'name' => v::noWhitespace()->notEmpty(),
-            'email' => v::noWhitespace()->notEmpty()->email()->emailAvailable(),
-            'password' => v::noWhitespace()->notEmpty()->length(4, 16),
-            'password_confirmation' => v::equals($request->getParam('password'))
+            'email' => v::noWhitespace()->notEmpty()->email()->setName('이메일'),
+            'password' => v::noWhitespace()->notEmpty()->length(4, 16)->setName('비밀번호')
         ]);
 
         if ($validation->failed()) {
-            return $response->withRedirect($this->router->pathFor('blog.admin.signup'));
-        }
-
-        User::create([
-            'email' => $request->getParam('email'),
-            'name' => $request->getParam('name'),
-            'password' => password_hash($request->getParam('password'), PASSWORD_DEFAULT)
-        ]);
-
-        return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
-    }
-
-    public function signIn(Request $request, Response $response): Response
-    {
-        return $this->view->render($response, 'admin/auth/signin.twig');
-    }
-
-    public function signInAction(Request $request, Response $response): Response
-    {
-        $validation = $this->validator->validate($request, [
-            'email' => v::noWhitespace()->notEmpty()->email(),
-            'password' => v::noWhitespace()->notEmpty()->length(4, 16),
-        ]);
-
-        if ($validation->failed()) {
-            return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
+            return $response->withRedirect($this->router->pathFor('blog.auth.login'));
         }
 
         $errors = [];
@@ -65,7 +37,7 @@ class AuthController extends Controller
         if (count($errors) > 0) {
             $this->session->set('errors', $errors);
 
-            return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
+            return $response->withRedirect($this->router->pathFor('blog.auth.login'));
         }
 
         $this->session->set('user', [
@@ -83,6 +55,6 @@ class AuthController extends Controller
             $this->session->delete('user');
         }
 
-        return $response->withRedirect($this->router->pathFor('blog.admin.signin'));
+        return $response->withRedirect($this->router->pathFor('blog.auth.login'));
     }
 }

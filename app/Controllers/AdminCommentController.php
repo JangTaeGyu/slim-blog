@@ -2,18 +2,18 @@
 namespace App\Controllers;
 
 use Slim\Http\{ Request, Response };
-use App\Models\GuestBook;
+use App\Models\Comment;
 use Respect\Validation\Validator as v;
 
-class AdminGuestBookController extends Controller
+class AdminCommentController extends Controller
 {
     public function index(Request $request, Response $response): Response
     {
         $params = $request->getParams();
 
-        $trash = $request->getUri()->getPath() === $this->router->pathFor('blog.admin.guestbook.trash');
+        $trash = $request->getUri()->getPath() === $this->router->pathFor('blog.admin.comment.trash');
 
-        $guestbooks = GuestBook::where('approved', !$trash)->where(function ($query) use ($params) {
+        $comments = Comment::targetTitle()->where('approved', !$trash)->where(function ($query) use ($params) {
             if (!empty($params['field']) && !empty($params['word'])) {
                 return $query->where($params['field'], 'like', "%{$params['word']}%");
             }
@@ -21,7 +21,7 @@ class AdminGuestBookController extends Controller
             return $query;
         })->orderBy('created_at', 'desc')->paginate(10);
 
-        return $this->view->render($response, 'admin/guestbook/index.twig', compact('params', 'trash', 'guestbooks'));
+        return $this->view->render($response, 'admin/comment/index.twig', compact('params', 'trash', 'comments'));
     }
 
     public function store(Request $request, Response $response): Response
@@ -31,7 +31,7 @@ class AdminGuestBookController extends Controller
             'comment' => v::notEmpty()->setName('답글')
         ]);
 
-        $nextLink = $this->router->pathFor('blog.admin.guestbook.index');
+        $nextLink = $this->router->pathFor('blog.admin.comment.index');
 
         if ($validation->failed()) {
             $errors = array_first($this->session->get('errors'));
@@ -41,12 +41,14 @@ class AdminGuestBookController extends Controller
             return $response->withRedirect($nextLink);
         }
 
-        $parent = GuestBook::find($request->getParam('parent_id'));
+        $parent = Comment::find($request->getParam('parent_id'));
 
-        $guestbook = new GuestBook;
-        $guestbook->comment = $request->getParam('comment');
+        $comment = new Comment;
+        $comment->target = $parent->target;
+        $comment->target_id = $parent->target_id;
+        $comment->comment = $request->getParam('comment');
 
-        $parent->child()->save($guestbook);
+        $parent->child()->save($comment);
 
         return $response->withRedirect($nextLink);
     }
@@ -54,30 +56,30 @@ class AdminGuestBookController extends Controller
     public function update(Request $request, Response $response): Response
     {
         $validation = $this->validator->validate($request, [
-            'guestbook_id' => v::noWhitespace()->intVal()->setName('방명록 인덱스'),
+            'comment_id' => v::noWhitespace()->intVal()->setName('댓글 인덱스'),
             'approved' => v::in(['0', '1'])->setName('승인여부'),
             'trash' => v::in(['0', '1'])->setName('경로')
         ]);
 
         $nextLink = $request->getParam('trash') ?
-            $this->router->pathFor('blog.admin.guestbook.trash') : $this->router->pathFor('blog.admin.guestbook.index');
+            $this->router->pathFor('blog.admin.comment.trash') : $this->router->pathFor('blog.admin.comment.index');
 
         if ($validation->failed()) {
             return $response->withRedirect($nextLink);
         }
 
-        $guestbook = GuestBook::find($request->getAttribute('guestbook_id'));
-        if (is_null($guestbook)) {
+        $comment = Comment::find($request->getAttribute('comment_id'));
+        if (is_null($comment)) {
             $this->session->set('fail', '수정 정보가 없습니다.');
 
             return $response->withRedirect($nextLink);
         } else {
-            if (is_null($guestbook->parent_id)) {
-                $guestbook->child()->update(['approved' => $request->getParam('approved')]);
+            if (is_null($comment->parent_id)) {
+                $comment->child()->update(['approved' => $request->getParam('approved')]);
             }
 
-            $guestbook->approved = $request->getParam('approved');
-            $guestbook->save();
+            $comment->approved = $request->getParam('approved');
+            $comment->save();
         }
 
         return $response->withRedirect($nextLink);
@@ -86,26 +88,26 @@ class AdminGuestBookController extends Controller
     public function destroy(Request $request, Response $response): Response
     {
         $validation = $this->validator->validate($request, [
-            'guestbook_id' => v::noWhitespace()->intVal()->setName('방명록 인덱스'),
+            'comment_id' => v::noWhitespace()->intVal()->setName('댓글 인덱스'),
             'trash' => v::in(['0', '1'])->setName('경로')
         ]);
 
         $nextLink = $request->getParam('trash') ?
-            $this->router->pathFor('blog.admin.guestbook.trash') : $this->router->pathFor('blog.admin.guestbook.index');
+            $this->router->pathFor('blog.admin.comment.trash') : $this->router->pathFor('blog.admin.comment.index');
 
         if ($validation->failed()) {
             return $response->withRedirect($nextLink);
         }
 
-        $guestbook = GuestBook::find($request->getAttribute('guestbook_id'));
-        if (is_null($guestbook)) {
+        $comment = Comment::find($request->getAttribute('comment_id'));
+        if (is_null($comment)) {
             $this->session->set('fail', '삭제 정보가 없습니다.');
         } else {
-            if (is_null($guestbook->parent_id)) {
-                $guestbook->child()->delete();
+            if (is_null($comment->parent_id)) {
+                $comment->child()->delete();
             }
 
-            $guestbook->delete();
+            $comment->delete();
         }
 
         return $response->withRedirect($nextLink);

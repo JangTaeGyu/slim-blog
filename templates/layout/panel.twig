@@ -11,21 +11,7 @@
 <body>
     {% include "layout/header.twig" %}
 
-    <div id="main">
-        <div class="container">
-            <div>
-                <div class="left">
-                    {% include "layout/admin_menu.twig" %}
-                </div>
-
-                <div class="right">
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {% block layer %}{% endblock %}
+    {% block content %}{% endblock %}
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript">

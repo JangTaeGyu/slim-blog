@@ -1,7 +1,7 @@
 {% extends "layout/admin_app.twig" %}
 
 {% set title = trash ? '휴지통' : '관리' %}
-{% set title = '방명록 ' ~ title %}
+{% set title = '댓글 ' ~ title %}
 {% set csrf_input = csrf_input() %}
 
 {% block title %} :: {{ title }}{% endblock %}
@@ -9,18 +9,18 @@
 {% block content %}
     <div id="content">
         <div class="top">
-            <h2>{{ title }}<small>{{ guestbooks.total }} 건</small></h2>
+            <h2>{{ title }}<small>{{ comments.total }} 건</small></h2>
             <div class="link">
                 {% if trash %}
-                    <a href="{{ path_for('blog.admin.guestbook.index') }}">방명록 관리</a>
+                    <a href="{{ path_for('blog.admin.comment.index') }}">댓글 관리</a>
                 {% else %}
-                    <a href="{{ path_for('blog.admin.guestbook.trash') }}">방명록 휴지통</a>
+                    <a href="{{ path_for('blog.admin.comment.trash') }}">댓글 휴지통</a>
                 {% endif %}
             </div>
         </div>
 
         <div class="search-box bg">
-            {% set search_link = trash ? 'blog.admin.guestbook.trash' : 'blog.admin.guestbook.index' %}
+            {% set search_link = trash ? 'blog.admin.comment.trash' : 'blog.admin.comment.index' %}
             {{ form_open('GET', { action: path_for(search_link) }) }}
                 <div class="search-field">
                     <select name="field" class="form-control">
@@ -40,36 +40,41 @@
         </div>
 
         <div class="comment-list bg">
-        {% if guestbooks.total == 0 %}
-            <p class="text-none">방명록 글이 없습니다.</p>
+        {% if comments.total == 0 %}
+            <p class="text-none">댓글 글이 없습니다.</p>
         {% else %}
             <ul>
-            {% for guestbook in guestbooks %}
+            {% for comment in comments %}
                 <li>
                     <div class="comment-content">
                         <div class="info">
-                            <span class="info-name">{{ guestbook.name }}</span>
-                            <span class="info-ip">{{ guestbook.ip }}</span>
-                            <span class="info-date">{{ guestbook.created_at }}</span>
+                            <span class="info-name">{{ comment.name }}</span>
+                            <span class="info-ip">{{ comment.ip }}</span>
+                            <span class="info-date">{{ comment.created_at }}</span>
                         </div>
                         <div class="text">
-                            <a href="javascript:void(0)">{{ guestbook.comment }}</a>
+                            <a href="javascript:void(0)">{{ comment.comment }}</a>
                         </div>
+                        {% if comment.target_title %}
+                            <div class="post">
+                                <i class="far fa-file-alt"></i>{{ comment.target_title }}
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="comment-btn">
                     {% if trash %}
-                        {{ form_open('DELETE', { action: path_for('blog.admin.guestbook.destroy', { guestbook_id: guestbook.id }), onsubmit: 'return fnConfirm()' }) }}
+                        {{ form_open('DELETE', { action: path_for('blog.admin.comment.destroy', { comment_id: comment.id }), onsubmit: 'return fnConfirm()' }) }}
                             {{ csrf_input | raw }}
                             <input type="hidden" name="trash" value="{{ trash ? 1 : 0 }}">
                             <button type="submit" class="btn small link">삭제하기</button>
                         {{ form_close() }}
                     {% else %}
-                        {% if guestbook.parent_id is null %}
-                            <button type="button" class="btn small link btnCreate" data-id="{{ guestbook.id }}">답글쓰기</button>
+                        {% if comment.parent_id is null %}
+                            <button type="button" class="btn small link btnCreate" data-id="{{ comment.id }}">답글쓰기</button>
                         {% endif %}
                     {% endif %}
 
-                        {{ form_open('PUT', { action: path_for('blog.admin.guestbook.update', { guestbook_id: guestbook.id }) }) }}
+                        {{ form_open('PUT', { action: path_for('blog.admin.comment.update', { comment_id: comment.id }) }) }}
                             {{ csrf_input | raw }}
                             <input type="hidden" name="approved" value="{{ trash ? 1 : 0 }}">
                             <input type="hidden" name="trash" value="{{ trash ? 1 : 0 }}">
@@ -83,7 +88,7 @@
         </div>
 
         <div class="bottom">
-            {{ guestbooks.links('pagination/default.twig') | raw }}
+            {{ comments.links('pagination/default.twig') | raw }}
         </div>
     </div>
 {% endblock %}
@@ -94,7 +99,7 @@
         <div class="layer-container">
             <div>
                 <div class="layer-content w-400">
-                    {{ form_open('POST', { name: 'form-create', action: path_for('blog.admin.guestbook.store') }) }}
+                    {{ form_open('POST', { name: 'form-create', action: path_for('blog.admin.comment.store') }) }}
                         {{ csrf_input | raw }}
                         <input type="hidden" name="parent_id">
 

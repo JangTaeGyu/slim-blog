@@ -1,67 +1,89 @@
 {% extends "layout/admin_app.twig" %}
 
+{% set title = '공지 관리' %}
 {% set csrf_input = csrf_input() %}
 
-{% block title %}공지사항{% endblock %}
-
-{% block style %}
-    <style>
-        .pagination { list-style: none; padding: 0; margin: 0; }
-        .pagination > li { display: inline-block; padding: 0 5px; }
-        .pagination > li > a { text-decoration: none; }
-        .pagination > li.active > span { font-size: 18px; font-weight: bold; }
-        form { display: inline-block; }
-    </style>
-{% endblock %}
+{% block title %} :: {{ title }}{% endblock %}
 
 {% block content %}
-    <h1>공지사항</h1>
+    <div id="content">
+        <div class="top">
+            <h2>{{ title }}<small>{{ notices.total }} 건</small></h2>
+            <div class="link">
+                <a href="{{ path_for('blog.admin.notice.create') }}">공지 쓰기</a>
+            </div>
+        </div>
 
-    {{ form_open('GET', { action: path_for('blog.admin.notice.create') }) }}
-        <button type="submit">공지쓰기</button>
-    {{ form_close() }}
+        <div class="search-box bg">
+            {{ form_open('GET', { action: path_for('blog.admin.notice.index') }) }}
+                <div class="search-field">
+                    <select name="field" class="form-control">
+                        <option value="">선택</option>
+                        <option value="name" {{ params.field == 'name' ? 'selected'}}>작성자</option>
+                        <option value="title" {{ params.field == 'title' ? 'selected'}}>제목</option>
+                        <option value="content" {{ params.field == 'content' ? 'selected'}}>내용</option>
+                    </select>
+                </div>
+                <div class="search-word">
+                    <input type="text" name="word" class="form-control" value="{{ params.word }}" placeholder="검색어를 입력해 주세요.">
+                </div>
+                <div class="search-btn">
+                    <button type="submit" class="btn"><i class="fas fa-search"></i></button>
+                </div>
+            {{ form_close() }}
+        </div>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>제목</th>
-                <th>작성일자</th>
-                <th>관리</th>
-            </tr>
-        </thead>
-        <tbody>
+        <div class="border-list bg">
         {% if notices.total == 0 %}
-            <tr>
-                <td colspan="4">아직 등록된 공지가 없습니다.</td>
-            </tr>
+            <p class="text-none">공지 글이 없습니다.</p>
         {% else %}
+            <ul>
             {% for notice in notices %}
-            <tr>
-                <td>{{ notice.id }}</td>
-                <td>
-                    <a href="{{ path_for('blog.admin.notice.edit', { notice_id: notice.id }) }}">{{ notice.title }}</a>
-                    {% if notice.count > 0 %}
-                        <small>{{ notice.count }}</small>
-                    {% endif %}
-                </td>
-                <td>{{ notice.created_at }}</td>
-                <td>
-                    {{ form_open('GET', { action: path_for('blog.admin.notice.edit', { notice_id: notice.id }) }) }}
-                        {{ csrf_input | raw }}
-                        <button type="submit">수정하기</button>
-                    {{ form_close() }}
+                <li class="{{ notice.approved == 0 ? 'bg-first-date' }}">
+                    <div class="border-content">
+                        <div class="text">
+                            <a href="javascript:void(0)">{{ notice.title }}</a>
+                        </div>
+                        <div class="info">
+                            <span class="info-name">{{ notice.name }}</span>
+                            <span class="info-hit" title="조회수"><i class="far fa-eye"></i>{{ notice.hit }}</span>
+                            <span class="info-count"  title="댓글수"><i class="fas fa-comment"></i>{{ notice.count }}</span>
+                            <span class="info-date">{{ notice.created_at }}</span>
+                        </div>
+                    </div>
+                    <div class="border-btn">
+                        {{ form_open('GET', { action: path_for('blog.admin.notice.edit', { notice_id: notice.id }) }) }}
+                            {{ csrf_input | raw }}
+                            <button type="submit" class="btn small link">수정하기</button>
+                        {{ form_close() }}
 
-                    {{ form_open('DELETE', { action: path_for('blog.admin.notice.destroy', { notice_id: notice.id }) }) }}
-                        {{ csrf_input | raw }}
-                        <button type="submit">삭제하기</button>
-                    {{ form_close() }}
-                </td>
-            </tr>
+                        {{ form_open('DELETE', { action: path_for('blog.admin.notice.destroy', { notice_id: notice.id }), onsubmit: 'return fnConfirm()' }) }}
+                            {{ csrf_input | raw }}
+                            <button type="submit" class="btn small link">삭제하기</button>
+                        {{ form_close() }}
+
+                        {{ form_open('PUT', { action: path_for('blog.admin.notice.update.approved', { notice_id: notice.id }) }) }}
+                            {{ csrf_input | raw }}
+                            <input type="hidden" name="approved" value="{{ notice.approved == 0 ? 1 : 0 }}">
+                            <button type="submit" class="btn small link">{{ notice.approved == 0 ? '공개하기' : '비공개하기' }}</button>
+                        {{ form_close() }}
+                    </div>
+                </li>
             {% endfor %}
+            </ul>
         {% endif %}
-        </tbody>
-    </table>
+        </div>
 
-    {{ notices.links('pagination/default.twig') | raw }}
+        <div class="bottom">
+            {{ notices.links('pagination/default.twig') | raw }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        function fnConfirm() {
+            return confirm("삭제하시면 복구가 불가능 합니다.\n정말로 삭제 하시겠습니까?");
+        }
+    </script>
 {% endblock %}

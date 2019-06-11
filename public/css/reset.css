@@ -1,0 +1,11 @@
+@charset "utf-8";
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500,700,900&subset=korean");
+
+* { font-family: 'Noto Sans KR', sans-serif; font-size: 14px; color: #555; box-sizing: border-box; }
+*::before, *::after { box-sizing: border-box; }
+html, body, div, h1, h2, h3, h4, h5, ul, p, button, a { padding: 0; margin: 0; }
+ul, ol { list-style: none; }
+a { text-decoration: none; color: #555; }
+a.active, a.active > i, a:hover, a:hover > i { color: #3498db; }
+textarea { resize: none; }
+

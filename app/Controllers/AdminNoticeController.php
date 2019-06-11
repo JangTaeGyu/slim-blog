@@ -9,9 +9,17 @@ class AdminNoticeController extends Controller
 {
     public function index(Request $request, Response $response): Response
     {
-        $notices = Notice::orderBy('created_at', 'desc')->paginate(10);
+        $params = $request->getParams();
 
-        return $this->view->render($response, 'admin/notice/index.twig', compact('notices'));
+        $notices = Notice::where(function ($query) use ($params) {
+            if (!empty($params['field']) && !empty($params['word'])) {
+                return $query->where($params['field'], 'like', "%{$params['word']}%");
+            }
+
+            return $query;
+        })->orderBy('created_at', 'desc')->paginate(10);
+
+        return $this->view->render($response, 'admin/notice/index.twig', compact('params', 'notices'));
     }
 
     public function create(Request $request, Response $response): Response
@@ -22,8 +30,9 @@ class AdminNoticeController extends Controller
     public function store(Request $request, Response $response): Response
     {
         $validation = $this->validator->validate($request, [
-            'title' => v::notEmpty()->length(5, 100)->setName('답글'),
-            'content' => v::notEmpty()->setName('본문'),
+            'title' => v::notEmpty()->length(5, 100)->setName('제목'),
+            'content' => v::notEmpty()->setName('내용'),
+            'accept_commnet' => v::in(['0', '1'])->setName('권한'),
             'approved' => v::in(['0', '1'])->setName('승인')
         ]);
 
@@ -34,7 +43,7 @@ class AdminNoticeController extends Controller
         Notice::create([
             'title' => $request->getParam('title'),
             'content' => $request->getParam('content'),
-            'accept_commnet' => is_null($request->getParam('accept_commnet')) ? 0 : 1,
+            'accept_commnet' => $request->getParam('accept_commnet'),
             'approved' => $request->getParam('approved')
         ]);
 
@@ -57,8 +66,9 @@ class AdminNoticeController extends Controller
     {
         $validation = $this->validator->validate($request, [
             'notice_id' => v::noWhitespace()->intVal()->setName('공지 인덱스'),
-            'title' => v::notEmpty()->length(5, 100)->setName('답글'),
-            'content' => v::notEmpty()->setName('본문'),
+            'title' => v::notEmpty()->length(5, 100)->setName('제목'),
+            'content' => v::notEmpty()->setName('내용'),
+            'accept_commnet' => v::in(['0', '1'])->setName('권한'),
             'approved' => v::in(['0', '1'])->setName('승인')
         ]);
 
@@ -84,6 +94,36 @@ class AdminNoticeController extends Controller
         return $response->withRedirect($this->router->pathFor('blog.admin.notice.index'));
     }
 
+    public function updateApproved(Request $request, Response $response): Response
+    {
+        $validation = $this->validator->validate($request, [
+            'notice_id' => v::noWhitespace()->intVal()->setName('공지 인덱스'),
+            'approved' => v::in(['0', '1'])->setName('승인')
+        ]);
+
+        $nextLink = $this->router->pathFor('blog.admin.notice.index');
+
+        if ($validation->failed()) {
+            $errors = array_first($this->session->get('errors'));
+
+            $this->session->set('fail', $errors[0]);
+
+            return $response->withRedirect($nextLink);
+        }
+
+        $notice = Notice::find($request->getAttribute('notice_id'));
+        if (is_null($notice)) {
+            $this->session->set('fail', '선택한 공지가 없습니다.');
+
+            return $response->withRedirect($nextLink);
+        }
+
+        $notice->approved = $request->getParam('approved');
+        $notice->save();
+
+        return $response->withRedirect($nextLink);
+    }
+
     public function destroy(Request $request, Response $response): Response
     {
         $validation = $this->validator->validate($request, [
@@ -93,6 +133,10 @@ class AdminNoticeController extends Controller
         $nextLink = $this->router->pathFor('blog.admin.notice.index');
 
         if ($validation->failed()) {
+            $errors = array_first($this->session->get('errors'));
+
+            $this->session->set('fail', $errors[0]);
+
             return $response->withRedirect($nextLink);
         }
 
@@ -100,6 +144,7 @@ class AdminNoticeController extends Controller
         if (is_null($notice)) {
             $this->session->set('fail', '삭제 정보가 없습니다.');
         } else {
+            $notice->comments()->delete();
             $notice->delete();
         }
 

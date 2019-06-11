@@ -16,6 +16,6 @@ class AuthMiddleware extends Middleware
 
         $session->set('fail', '로그인 정보가 없습니다.');
 
-        return $response->withRedirect($this->container->get('router')->pathFor('blog.admin.signin'));
+        return $response->withRedirect($this->container->get('router')->pathFor('blog.auth.login'));
     }
 }

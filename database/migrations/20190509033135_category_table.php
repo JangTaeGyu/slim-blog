@@ -8,7 +8,10 @@ class CategoryTable extends Migration
     {
         $this->schema->create('categories', function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->increments('id');
+            $table->integer('parent_id')->nullable()->unsigned();
             $table->string('name');
+            $table->text('detail');
+            $table->integer('count')->unsigned()->default(0);
             $table->timestamps();
         });
     }

@@ -1,65 +1,63 @@
 {% extends "layout/admin_app.twig" %}
 
-{% set title = notice ? '공지수정' : '공지쓰기' %}
+{% set title = notice ? '수정하기' : '공지 쓰기' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %} :: {{ title }}{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+    <div id="content">
+        <div class="top">
+            <h2>{{ title }}<small></small></h2>
+        </div>
 
-    {% if notice %}
-        {{ form_open('PUT', { action: path_for('blog.admin.notice.update', { notice_id: notice.id }) }) }}
-    {% else %}
-        {{ form_open('POST', { action: path_for('blog.admin.notice.store') }) }}
-    {% endif %}
+        <div class="form-box bg">
+        {% if notice %}
+            {{ form_open('PUT', { action: path_for('blog.admin.notice.update', { notice_id: notice.id }) }) }}
+        {% else %}
+            {{ form_open('POST', { action: path_for('blog.admin.notice.store') }) }}
+        {% endif %}
 
-        {{ csrf_input() }}
+                {{ csrf_input() }}
 
-        <table border="1">
-            <tbody>
-                <tr>
-                    <th>제목</th>
-                    <td>
-                        <input type="text" name="title" value="{{ old.title ? old.title : notice.title }}">
-                        {% if errors.title %}
-                            <small>{{ errors.title | first }}</small>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <textarea name="content" cols="50" rows="5">{{ old.content ? old.content : notice.content }}</textarea>
-                        {% if errors.content %}
-                            <small>{{ errors.content | first }}</small>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th>권한</th>
-                    <td>
-                        <label><input type="checkbox" name="accept_commnet" value="1" {{ old.accept_commnet == 1 or notice.accept_commnet == 1 ? 'checked' }}> 댓글 허용</label>
-                    </td>
-                </tr>
-                <tr>
-                    <th>승인</th>
-                    <td>
-                        {% set approved = old.approved ? old.approved : notice.approved %}
-                        <label><input type="radio" name="approved" value="1" {{ approved == 1 ? 'checked' }}> 공개</label>
-                        <label><input type="radio" name="approved" value="0" {{ approved == 0 ? 'checked' }}> 비공개</label>
-                        {% if errors.approved %}
-                            <small>{{ errors.approved | first }}</small>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% if notice %}
-                <tr>
-                    <th>등록일자</th>
-                    <td>{{ notice.created_at }}</td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
-
-        <button type="submit">{{ notice ? '수정하기' : '저장하기' }}</button>
-    {{ form_close() }}
+                <div class="form-group">
+                    <label for="title"><i class="fas fa-envelope"></i>제목</label>
+                    <input type="text" name="title" id="title" class="form-control" value="{{ old.title ? old.title : notice.title }}" placeholder="제목을 입력해 주세요.">
+                    {% if errors.title %}
+                        <small class="error">{{ errors.title | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="content"><i class="fas fa-font"></i>내용</label>
+                    <textarea name="content" class="form-control border h-150">{{ old.content ? old.content : notice.content }}</textarea>
+                    {% if errors.content %}
+                        <small class="error">{{ errors.content | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="accept_commnet"><i class="fas fa-comment"></i>권한</label>
+                    <select name="accept_commnet" id="accept_commnet" class="form-control">
+                        <option value="0" {{ old.accept_commnet == 0 or notice.accept_commnet == 0 ? 'selected' }}>댓글 비허용</option>
+                        <option value="1" {{ old.accept_commnet == 1 or notice.accept_commnet == 1 ? 'selected' }}>댓글 허용</option>
+                    </select>
+                    {% if errors.accept_commnet %}
+                        <small class="error">{{ errors.accept_commnet | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="approved"><i class="fas fa-check"></i>승인</label>
+                    <select name="approved" id="approved" class="form-control">
+                        <option value="0" {{ old.approved == 0 or notice.approved == 0 ? 'selected' }}>비공개</option>
+                        <option value="1" {{ old.approved == 1 or notice.approved == 1 ? 'selected' }}>공개</option>
+                    </select>
+                    {% if errors.approved %}
+                        <small class="error">{{ errors.approved | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group text-center">
+                    <a href="{{ path_for('blog.admin.notice.index') }}" class="btn clouds">취소하기</a>
+                    <button type="submit" class="btn peter-river">저장하기</button>
+                </div>
+            {{ form_close() }}
+        </div>
+    </div>
 {% endblock %}

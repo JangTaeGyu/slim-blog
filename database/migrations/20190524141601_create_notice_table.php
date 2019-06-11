@@ -10,6 +10,8 @@ class CreateNoticeTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->text('content');
+            $table->integer('user_id')->nullable()->unsigned();
+            $table->string('name')->nullable();
             $table->boolean('accept_commnet')->default(true);
             $table->boolean('approved')->default(true);
             $table->integer('hit')->unsigned()->default(0);

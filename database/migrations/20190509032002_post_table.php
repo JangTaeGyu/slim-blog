@@ -12,6 +12,12 @@ class PostTable extends Migration
             $table->string('title');
             $table->string('image')->nullable();
             $table->text('body');
+            $table->integer('user_id')->nullable()->unsigned();
+            $table->string('name')->nullable();
+            $table->boolean('accept_commnet')->default(true);
+            $table->boolean('approved')->default(true);
+            $table->integer('hit')->unsigned()->default(0);
+            $table->integer('count')->unsigned()->default(0);
             $table->timestamps();
         });
     }

@@ -7,7 +7,6 @@ class PostTagTable extends Migration
     public function up()
     {
         $this->schema->create('post_tag', function (\Illuminate\Database\Schema\Blueprint $table) {
-            $table->increments('id');
             $table->integer('post_id')->unsigned();
             $table->foreign('post_id')->references('id')->on('posts');
             $table->integer('tag_id')->unsigned();

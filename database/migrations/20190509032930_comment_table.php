@@ -10,10 +10,10 @@ class CommentTable extends Migration
             $table->increments('id');
             $table->integer('parent_id')->nullable()->unsigned();
             $table->integer('user_id')->nullable()->unsigned();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('password', 60)->nullable();
             $table->text('comment');
-            $table->boolean('approved');
+            $table->boolean('approved')->default(true);
             $table->enum('target', ['posts', 'notices']);
             $table->integer('target_id')->unsigned();
             $table->ipAddress('ip');

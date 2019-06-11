@@ -1,8 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Http\{ Request, Response };
 
 class AdminMainController extends Controller
 {

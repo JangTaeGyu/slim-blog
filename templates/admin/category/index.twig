@@ -1,45 +1,135 @@
 {% extends "layout/admin_app.twig" %}
 
-{% block title %}카테고리 관리자{% endblock %}
+{% set title = '카테고리 관리 ' %}
+{% set csrf_input = csrf_input() %}
 
-{% block style %}
-    <style>
-        form { display: inline-block; }
-    </style>
-{% endblock %}
+{% block title %} :: {{ title }}{% endblock %}
 
 {% block content %}
-    <h1>카테고리 관리자</h1>
-
-    {% set csrf_input = csrf_input() %}
-
-    {{ form_open('POST', { action: path_for('blog.admin.category.store') }) }}
-        {{ csrf_input | raw }}
-        <div>
-            <label for="category_name">카테고리 명칭</label>
-            <input type="text" name="category_name" id="category_name">
-            {% if errors.category_name %}
-                <small>{{ errors.category_name | first }}</small>
-            {% endif %}
+    <div id="content">
+        <div class="top">
+            <h2>{{ title }}<small></small></h2>
+            <div class="link">
+                <a href="javascript:void(0)" class="btnCreate">카테고리 추가</a>
+            </div>
         </div>
 
-        <button type="submit">추가하기</button>
-    {{ form_close() }}
+        <div class="category-list bg">
+        {% if categories.count == 0 %}
+            <p class="text-none">카테고리가 없습니다.</p>
+        {% else %}
+            <ul>
+            {% for category in categories %}
+                <li class="{{ category.parent_id is not null ? 'sub' }}">
+                    <div class="category-content">
+                        <div class="text">
+                            <a href="javascript:void(0)">{{ category.name }}</a>
+                            <small>({{ category.count }})</small>
+                        </div>
+                    </div>
+                    <div class="category-btn">
+                    {% if category.parent_id is null %}
+                        <button type="button" class="btn small link btnCreate" data-id="{{ category.id }}">추가하기</button>
+                    {% endif %}
 
-    <ul>
-        {% for category in categories %}
-        <li>
-        {{ form_open('PUT', { action: path_for('blog.admin.category.update', { category_id: category.id }) }) }}
-            {{ csrf_input | raw }}
-            <input type="text" name="category_name" id="category_name" value="{{ category.name }}">
-            <button type="submit">수정하기</button>
-        {{ form_close() }}
+                        <button type="button" class="btn small link btnEdit" data-name="{{ category.name }}" data-action="{{ path_for('blog.admin.category.update', { category_id: category.id }) }}">수정하기</button>
 
-        {{ form_open('DELETE', { action: path_for('blog.admin.category.destroy', { category_id: category.id }) }) }}
-            {{ csrf_input | raw }}
-            <button type="submit">삭제하기</button>
-        {{ form_close() }}
-        </li>
-        {% endfor %}
-    </ul>
+                        {{ form_open('DELETE', { action: path_for('blog.admin.category.destroy', { category_id: category.id }), onsubmit: 'return fnConfirm()' }) }}
+                            {{ csrf_input | raw }}
+                            <button type="submit" class="btn small link">삭제하기</button>
+                        {{ form_close() }}
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block layer %}
+    <div class="layer">
+        <div class="layer-bg"></div>
+        <div class="layer-container">
+            <div>
+                <div id="contentCreate" class="layer-content w-400">
+                    {{ form_open('POST', { name: 'form-create', action: path_for('blog.admin.category.store') }) }}
+                        {{ csrf_input | raw }}
+                        <input type="hidden" name="parent_id">
+
+                        <div class="top">
+                            <h3>카테고리 추가</h3>
+                        </div>
+                        <div class="middle">
+                            <div class="form-group">
+                                <label for="name"><i class="fas fa-envelope"></i>명칭</label>
+                                <input type="text" name="name" id="name" class="form-control border" placeholder="카테고리를 입력해 주세요.">
+                            </div>
+                        </div>
+                        <div class="bottom text-center">
+                            <button type="button" class="btn clouds btnClose">취소하기</button>
+                            <button type="submit" class="btn peter-river">저장하기</button>
+                        </div>
+                    {{ form_close() }}
+                </div>
+                <div id="contentEdit" class="layer-content w-400">
+                    {{ form_open('PUT', { name: 'form-edit' }) }}
+                        {{ csrf_input | raw }}
+
+                        <div class="top">
+                            <h3>수정하기</h3>
+                        </div>
+                        <div class="middle">
+                            <div class="form-group">
+                                <label for="name"><i class="fas fa-envelope"></i>명칭</label>
+                                <input type="text" name="name" id="name" class="form-control border" placeholder="카테고리를 입력해 주세요.">
+                            </div>
+                        </div>
+                        <div class="bottom text-center">
+                            <button type="button" class="btn clouds btnClose">취소하기</button>
+                            <button type="submit" class="btn peter-river">저장하기</button>
+                        </div>
+                    {{ form_close() }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btnCreate').on("click", function (e) {
+                var data = $(this).data();
+                if (typeof data.id == "number") {
+                    $("form[name=form-create]").find("input[name=parent_id]").val(data.id);
+                }
+
+                $('#contentEdit').hide();
+                $('#contentCreate').show();
+
+                $('.layer').fadeIn();
+            });
+
+            $('.btnEdit').on("click", function (e) {
+                var data = $(this).data();
+
+                $("form[name=form-edit]").find("input[name=name]").val(data.name);
+                $("form[name=form-edit]").attr('action', data.action);
+
+                $('#contentCreate').hide();
+                $('#contentEdit').show();
+
+                $('.layer').fadeIn();
+            });
+
+            $('.btnClose').on("click", function (e) {
+                $('.layer').fadeOut();
+            });
+        });
+
+        function fnConfirm() {
+            return confirm("삭제하시면 복구가 불가능 합니다.\n정말로 삭제 하시겠습니까?");
+        }
+    </script>
 {% endblock %}

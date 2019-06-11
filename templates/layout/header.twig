@@ -1,0 +1,46 @@
+<div id="header">
+    <h1 class="brand">
+        <a href="{{ path_for('blog.main') }}"><i class="fas fa-blog"></i>블로그</a>
+        <small>Slim Framework 이용한 블로그 만들기</small>
+    </h1>
+    <div class="navbar">
+        <ul>
+            {% if session.has('user') %}
+                {% set user = session.get('user') %}
+                <li id="profile">
+                    <input type="checkbox" id="profileBtn" class="none">
+                    <label for="profileBtn" class="btn concrete"><i class="fas fa-address-card"></i>프로필</label>
+                    <div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i>{{ user.name }}</label>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i>{{ user.email }}</label>
+                        </div>
+                        <div class="form-group last">
+                            <a href="{{ path_for('blog.auth.logout') }}" class="btn block wet-asphalt">로그아웃</a>
+                        </div>
+                    </div>
+                </li>
+            {% else %}
+                {% if is_current_path('blog.auth.login') %}
+                    <li><a href="{{ path_for('blog.member.join') }}"><i class="fas fa-user-plus"></i>가입하기</a></li>
+                {% else %}
+                    <li><a href="{{ path_for('blog.auth.login') }}"><i class="fas fa-sign-in-alt"></i>로그인</a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+{% if session.has('fail') %}
+    <div class="alert error">
+        <p>{{ session.flash('fail') }}</p>
+    </div>
+{% endif %}
+
+{% if session.has('success') %}
+    <div class="alert success">
+        <p>{{ session.flash('success') }}</p>
+    </div>
+{% endif %}

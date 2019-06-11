@@ -9,11 +9,14 @@ class Comment extends Model
 
     protected $fillable = [
         'parent_id',
+        'user_id',
         'name',
-        'email',
+        'password',
         'comment',
         'approved',
-        'post_id'
+        'target',
+        'target_id',
+        'ip'
     ];
 
     public function parent()
@@ -26,14 +29,29 @@ class Comment extends Model
         return $this->hasMany(self::class, 'parent_id', 'id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     public function post()
     {
-        return $this->belongsTo(Post::class, 'target_id', 'id')->where('target', 'posts');
+        return $this->belongsTo(Post::class, 'target_id', 'id');
     }
 
     public function notice()
     {
-        return $this->belongsTo(Notice::class, 'target_id', 'id')->where('target', 'notices');
+        return $this->belongsTo(Notice::class, 'target_id', 'id');
+    }
+
+    public function scopeTargetTitle($query)
+    {
+        return $query->select('*')->selectRaw("
+            case
+                when comments.target = 'posts' then (select title from posts where id = comments.target_id)
+                when comments.target = 'notices' then (select title from notices where id = comments.target_id)
+            end as target_title
+        ");
     }
 
     public static function boot()
@@ -42,7 +60,7 @@ class Comment extends Model
 
         $session = new \App\Session\PHPSession;
 
-        self::creating(function ($comment) use ($session) {
+        static::creating(function ($comment) use ($session) {
             if ($session->has('user')) {
                 $user = $session->get('user');
 
@@ -51,6 +69,26 @@ class Comment extends Model
             }
 
             $comment->ip = $_SERVER['REMOTE_ADDR'];
+        });
+
+        static::created(function ($comment) {
+            if ($comment->target === 'posts') {
+                $comment->post()->increment('count', 1);
+            }
+
+            if ($comment->target === 'notices') {
+                $comment->notice()->increment('count', 1);
+            }
+        });
+
+        static::deleted(function ($comment) {
+            if ($comment->target === 'posts') {
+                $comment->post()->decrement('count', 1);
+            }
+
+            if ($comment->target === 'notices') {
+                $comment->notice()->decrement('count', 1);
+            }
         });
     }
 }
