@@ -8,7 +8,8 @@ use App\Controllers\{
     AdminCategoryController,
     AdminNoticeController,
     AdminCommentController,
-    AdminGuestBookController
+    AdminGuestBookController,
+    AdminUserController
 };
 use App\Middlewares\{
     AuthMiddleware,
@@ -31,10 +32,10 @@ return function (App $app) {
         $app->post('/login', AuthController::class . ':loginAction')->setName('blog.auth.login.action');
     })->add(UnAuthMiddleware::class);
 
-    $app->group('/admin', function (App $app) {
+    // 로그아웃
+    $app->get('/logout', AuthController::class . ':logout')->setName('blog.auth.logout');
 
-        // 로그아웃
-        $app->get('/logout', AuthController::class . ':logout')->setName('blog.auth.logout');
+    $app->group('/admin', function (App $app) {
 
         // 관리자 > 블로그 관리 홈
         $app->get('/main', AdminMainController::class . ':main')->setName('blog.admin.main');
@@ -69,9 +70,10 @@ return function (App $app) {
         $app->delete('/guestbooks/{guestbook_id:[0-9]+}', AdminGuestBookController::class . ':destroy')->setName('blog.admin.guestbook.destroy');
 
         // 관리자 > 회원 관리
-        $app->get('/users', \App\Controllers\AdminUserController::class . ':index')->add(PaginationMiddleware::class)->setName('blog.admin.user.index');
-        $app->get('/users/{user_id:[0-9]+}/edit', \App\Controllers\AdminUserController::class . ':edit')->setName('blog.admin.user.edit');
-        $app->put('/users/{user_id:[0-9]+}', \App\Controllers\AdminUserController::class . ':update')->setName('blog.admin.user.update');
-        $app->delete('/users/{user_id:[0-9]+}', \App\Controllers\AdminUserController::class . ':destroy')->setName('blog.admin.user.destroy');
+        $app->get('/users', AdminUserController::class . ':index')->add(PaginationMiddleware::class)->setName('blog.admin.user.index');
+        $app->get('/users/{user_id:[0-9]+}/edit', AdminUserController::class . ':edit')->setName('blog.admin.user.edit');
+        $app->put('/users/{user_id:[0-9]+}', AdminUserController::class . ':update')->setName('blog.admin.user.update');
+        $app->put('/users/{user_id:[0-9]+}/approved', AdminUserController::class . ':updateApproved')->setName('blog.admin.user.update.approved');
+        $app->delete('/users/{user_id:[0-9]+}', AdminUserController::class . ':destroy')->setName('blog.admin.user.destroy');
     })->add(AuthMiddleware::class);
 };

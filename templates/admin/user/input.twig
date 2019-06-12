@@ -1,0 +1,58 @@
+{% extends "layout/admin_app.twig" %}
+
+{% set title = '수정하기' %}
+
+{% block title %} :: {{ title }}{% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div class="top">
+            <h2>{{ title }}<small></small></h2>
+        </div>
+
+        <div class="form-box bg">
+            {{ form_open('PUT', { action: path_for('blog.admin.user.update', { user_id: user.id }) }) }}
+                {{ csrf_input() }}
+
+                <div class="form-group">
+                    <label for="name"><i class="fas fa-user"></i>이름</label>
+                    <input type="text" name="name" id="name" class="form-control" value="{{ old.name ? old.name : user.name }}" placeholder="제목을 입력해 주세요.">
+                    {% if errors.name %}
+                        <small class="error">{{ errors.name | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i>이메일</label>
+                    <input type="text" name="email" id="email" class="form-control" value="{{ old.email ? old.email : user.email }}" placeholder="제목을 입력해 주세요.">
+                    {% if errors.email %}
+                        <small class="error">{{ errors.email | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="grade"><i class="fas fa-address-card"></i>등급</label>
+                    <select name="grade" id="grade" class="form-control">
+                        <option value="N" {{ old.grade == 'N' or user.grade == 'N' ? 'selected' }}>일반회원</option>
+                        <option value="A" {{ old.grade == 'A' or user.grade == 'A' ? 'selected' }}>관리자</option>
+                    </select>
+                    {% if errors.grade %}
+                        <small class="error">{{ errors.grade | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="approved"><i class="fas fa-check"></i>승인</label>
+                    <select name="approved" id="approved" class="form-control">
+                        <option value="0" {{ old.approved == 0 or user.approved == 0 ? 'selected' }}>미승인</option>
+                        <option value="1" {{ old.approved == 1 or user.approved == 1 ? 'selected' }}>승인</option>
+                    </select>
+                    {% if errors.approved %}
+                        <small class="error">{{ errors.approved | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group text-center">
+                    <a href="{{ path_for('blog.admin.user.index') }}" class="btn clouds">취소하기</a>
+                    <button type="submit" class="btn peter-river">저장하기</button>
+                </div>
+            {{ form_close() }}
+        </div>
+    </div>
+{% endblock %}

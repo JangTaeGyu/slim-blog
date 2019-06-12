@@ -11,7 +11,8 @@ class UserTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password', 60);
-            $table->rememberToken();
+            $table->enum('grade', ['A', 'N'])->default('N');
+            $table->boolean('approved')->default(true);
             $table->timestamps();
         });
     }

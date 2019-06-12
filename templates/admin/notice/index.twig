@@ -53,7 +53,6 @@
                     </div>
                     <div class="border-btn">
                         {{ form_open('GET', { action: path_for('blog.admin.notice.edit', { notice_id: notice.id }) }) }}
-                            {{ csrf_input | raw }}
                             <button type="submit" class="btn small link">수정하기</button>
                         {{ form_close() }}
 

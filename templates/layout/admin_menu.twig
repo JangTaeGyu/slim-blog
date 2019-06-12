@@ -37,6 +37,8 @@
                     ? 'active' }}">방명록 관리</a></li>
             </ul>
         </li>
-        <li><a href="{{ path_for('blog.admin.user.index') }}" class="{{ is_current_path('blog.admin.user.index') ? 'active' }}"><i class="fas fa-users"></i>회원 관리</a></li>
+        <li><a href="{{ path_for('blog.admin.user.index') }}" class="{{
+                is_current_path('blog.admin.user.index')
+                ? 'active' }}"><i class="fas fa-users"></i>회원 관리</a></li>
     </ul>
 </div>

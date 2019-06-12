@@ -20,7 +20,7 @@
                 {{ csrf_input() }}
 
                 <div class="form-group">
-                    <label for="title"><i class="fas fa-envelope"></i>제목</label>
+                    <label for="title"><i class="fas fa-heading"></i>제목</label>
                     <input type="text" name="title" id="title" class="form-control" value="{{ old.title ? old.title : notice.title }}" placeholder="제목을 입력해 주세요.">
                     {% if errors.title %}
                         <small class="error">{{ errors.title | first }}</small>

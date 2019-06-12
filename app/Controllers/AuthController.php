@@ -25,7 +25,7 @@ class AuthController extends Controller
 
         $errors = [];
 
-        $user = User::where('email', $request->getParam('email'))->first();
+        $user = User::where('approved', true)->where('email', $request->getParam('email'))->first();
         if (is_null($user)) {
             $errors = array_merge($errors, ['email' => ['일치하는 회원이 없습니다.']]);
         } else {
@@ -42,11 +42,15 @@ class AuthController extends Controller
 
         $this->session->set('user', [
             'id' => $user->id,
+            'name' => $user->name,
             'email' => $user->email,
-            'name' => $user->name
+            'grade' => $user->grade
         ]);
 
-        return $response->withRedirect($this->router->pathFor('blog.admin.main'));
+        $nextLink = $user->grade === "A" ?
+            $this->router->pathFor('blog.admin.main') : $this->router->pathFor('blog.main');
+
+        return $response->withRedirect($nextLink);
     }
 
     public function logout(Request $request, Response $response): Response

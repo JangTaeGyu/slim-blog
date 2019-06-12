@@ -10,6 +10,7 @@ class User extends Model
     protected $fillable = [
         'name',
         'email',
+        'grade',
         'approved',
         'password'
     ];

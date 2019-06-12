@@ -11,7 +11,13 @@ class UnAuthMiddleware extends Middleware
         $session = $this->container->get('session');
 
         if ($session->has('user')) {
-            return $response->withRedirect($this->container->get('router')->pathFor('blog.admin.main'));
+            $user = $session->get('user');
+
+            if ($user['grade'] === "A") {
+                return $response->withRedirect($this->container->get('router')->pathFor('blog.admin.main'));
+            } else {
+                return $response->withRedirect($this->container->get('router')->pathFor('blog.main'));
+            }
         }
 
         return $next($request, $response);

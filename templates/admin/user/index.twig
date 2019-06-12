@@ -1,46 +1,82 @@
 {% extends "layout/admin_app.twig" %}
 
-{% block title %}회원 관리자{% endblock %}
+{% set title = '회원 관리' %}
+{% set csrf_input = csrf_input() %}
 
-{% block style %}
-    <style>
-        .pagination { list-style: none; padding: 0; margin: 0; }
-        .pagination > li { display: inline-block; padding: 0 5px; }
-        .pagination > li > a { text-decoration: none; }
-        .pagination > li.active > span { font-size: 18px; font-weight: bold; }
-    </style>
-{% endblock %}
+{% block title %} :: {{ title }}{% endblock %}
 
 {% block content %}
-<h1>회원 관리자</h1>
-<table border="1">
-    <thead>
-        <th>Id</th>
-        <th>이름</th>
-        <th>이메일</th>
-        <th>승인여부</th>
-        <th>등록일자</th>
-        <th>관리</th>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td><a href="{{ path_for('blog.admin.user.edit', { user_id: user.id }) }}">{{ user.name }}</a></td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.approved ? '승인' : '미승인' }}</td>
-            <td>{{ user.created_at }}</td>
-            <td>
-                {{ form_open('DELETE', { action: path_for('blog.admin.user.destroy', { user_id: user.id }) }) }}
-                    {{ csrf_input() }}
-                    <button type="submit">삭제하기</button>
-                {{ form_close() }}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div id="content">
+        <div class="top">
+            <h2>{{ title }}<small>{{ users.total }} 건</small></h2>
+        </div>
 
-{{ users.links('pagination/default.twig') | raw }}
+        <div class="search-box bg">
+            {{ form_open('GET', { action: path_for('blog.admin.user.index') }) }}
+                <div class="search-field">
+                    <select name="field" class="form-control">
+                        <option value="">선택</option>
+                        <option value="name" {{ params.field == 'name' ? 'selected'}}>이름</option>
+                        <option value="email" {{ params.field == 'email' ? 'selected'}}>이메일</option>
+                    </select>
+                </div>
+                <div class="search-word">
+                    <input type="text" name="word" class="form-control" value="{{ params.word }}" placeholder="검색어를 입력해 주세요.">
+                </div>
+                <div class="search-btn">
+                    <button type="submit" class="btn"><i class="fas fa-search"></i></button>
+                </div>
+            {{ form_close() }}
+        </div>
 
+        <div class="border-list bg">
+        {% if users.total == 0 %}
+            <p class="text-none">회원이 없습니다.</p>
+        {% else %}
+            <ul>
+            {% for user in users %}
+                <li class="{{ user.approved == 0 ? 'bg-first-date' }}">
+                    <div class="border-content">
+                        <div class="info mg-top-0">
+                            <span class="info-name">{{ user.name }}</span>
+                            <span>{{ user.email }}</span>
+                            <span>{{ user.grade == 'A' ? '관리자' : '일반회원' }}</span>
+                            <span>{{ user.approved ? '승인완료' : '미승인' }}</span>
+                            <span class="info-date">{{ user.created_at }}</span>
+                        </div>
+                    </div>
+                    <div class="border-btn">
+                        {{ form_open('GET', { action: path_for('blog.admin.user.edit', { user_id: user.id }) }) }}
+                            <button type="submit" class="btn small link">수정하기</button>
+                        {{ form_close() }}
+
+                        {{ form_open('DELETE', { action: path_for('blog.admin.user.destroy', { user_id: user.id }), onsubmit: 'return fnConfirm()' }) }}
+                            {{ csrf_input | raw }}
+                            <button type="submit" class="btn small link">삭제하기</button>
+                        {{ form_close() }}
+
+                        {{ form_open('PUT', { action: path_for('blog.admin.user.update.approved', { user_id: user.id }) }) }}
+                            {{ csrf_input | raw }}
+                            <input type="hidden" name="approved" value="{{ user.approved == 0 ? 1 : 0 }}">
+                            <button type="submit" class="btn small link">{{ user.approved == 0 ? '승인하기' : '미승인하기' }}</button>
+                        {{ form_close() }}
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </div>
+
+        <div class="bottom">
+            {{ notices.links('pagination/default.twig') | raw }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        function fnConfirm() {
+            return confirm("삭제하시면 복구가 불가능 합니다.\n정말로 삭제 하시겠습니까?");
+        }
+    </script>
 {% endblock %}
