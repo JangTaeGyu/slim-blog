@@ -19,7 +19,6 @@ $ ./vendor/bin/phinx migrate
 # Dev Server Start
 $ composer start
 ```
-작업중인 개인 프로젝트입니다.
 
 ## 진행사항
 
