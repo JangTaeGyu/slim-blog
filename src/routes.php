@@ -6,6 +6,7 @@ use App\Controllers\{
     AuthController,
     AdminMainController,
     AdminCategoryController,
+    AdminPostController,
     AdminNoticeController,
     AdminCommentController,
     AdminGuestBookController,
@@ -45,6 +46,15 @@ return function (App $app) {
         $app->post('/categories', AdminCategoryController::class . ':store')->setName('blog.admin.category.store');
         $app->put('/categories/{category_id:[0-9]+}', AdminCategoryController::class . ':update')->setName('blog.admin.category.update');
         $app->delete('/categories/{category_id:[0-9]+}', AdminCategoryController::class . ':destroy')->setName('blog.admin.category.destroy');
+
+        // 관리자 > 콘텐츠 > 글 관리
+        $app->get('/posts', AdminPostController::class . ':index')->add(PaginationMiddleware::class)->setName('blog.admin.post.index');
+        $app->get('/posts/create', AdminPostController::class . ':create')->setName('blog.admin.post.create');
+        $app->get('/posts/{post_id:[0-9]+}/edit', AdminPostController::class . ':edit')->setName('blog.admin.post.edit');
+        $app->post('/posts', AdminPostController::class . ':store')->setName('blog.admin.post.store');
+        $app->put('/posts/{post_id:[0-9]+}', AdminPostController::class . ':update')->setName('blog.admin.post.update');
+        $app->put('/posts/{post_id:[0-9]+}/approved', AdminPostController::class . ':updateApproved')->setName('blog.admin.post.update.approved');
+        $app->delete('/posts/{post_id:[0-9]+}', AdminPostController::class . ':destroy')->setName('blog.admin.post.destroy');
 
         // 관리자 > 콘텐츠 > 공지 관리
         $app->get('/notices', AdminNoticeController::class . ':index')->add(PaginationMiddleware::class)->setName('blog.admin.notice.index');

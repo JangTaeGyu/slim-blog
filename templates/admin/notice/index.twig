@@ -8,7 +8,7 @@
 {% block content %}
     <div id="content">
         <div class="top">
-            <h2>{{ title }}<small>{{ notices.total }} 건</small></h2>
+            <h2>{{ title }}<small>{{ notices.total | number_format }} 건</small></h2>
             <div class="link">
                 <a href="{{ path_for('blog.admin.notice.create') }}">공지 쓰기</a>
             </div>
@@ -46,8 +46,8 @@
                         </div>
                         <div class="info">
                             <span class="info-name">{{ notice.name }}</span>
-                            <span class="info-hit" title="조회수"><i class="far fa-eye"></i>{{ notice.hit }}</span>
-                            <span class="info-count"  title="댓글수"><i class="fas fa-comment"></i>{{ notice.count }}</span>
+                            <span class="info-hit" title="조회수"><i class="far fa-eye"></i>{{ notice.hit | number_format }}</span>
+                            <span class="info-count"  title="댓글수"><i class="fas fa-comment"></i>{{ notice.count | number_format }}</span>
                             <span class="info-date">{{ notice.created_at }}</span>
                         </div>
                     </div>

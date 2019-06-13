@@ -4,6 +4,7 @@ return [
     'settings' => [
         'displayErrorDetails' => true,
         'addContentLengthHeader' => false,
+        'uploadDirectory' => dirname(__DIR__) . '/public',
         'twig' => [
             'path' => dirname(__DIR__) . '/templates',
             'cache' => false,

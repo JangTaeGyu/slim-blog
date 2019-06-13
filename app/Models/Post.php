@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Post extends Model
 {
@@ -9,10 +10,9 @@ class Post extends Model
 
     protected $fillable = [
         'category_id',
-        'slug',
         'title',
         'image',
-        'content',
+        'body',
         'user_id',
         'name',
         'accept_commnet',
@@ -20,6 +20,13 @@ class Post extends Model
         'hit',
         'count'
     ];
+
+    public function scopeCategoryName(Builder $query)
+    {
+        return $query->select('*')->selectRaw("
+            (select name from categories where id = posts.category_id) as category_name
+        ");
+    }
 
     public function category()
     {
@@ -39,5 +46,29 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class, 'post_id', 'id');
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        $session = new \App\Session\PHPSession;
+
+        static::creating(function ($comment) use ($session) {
+            if ($session->has('user')) {
+                $user = $session->get('user');
+
+                $comment->user_id = $user['id'];
+                $comment->name = $user['name'];
+            }
+        });
+
+        static::created(function ($comment) {
+            $comment->category()->increment('count', 1);
+        });
+
+        static::deleted(function ($comment) {
+            $comment->category()->decrement('count', 1);
+        });
     }
 }

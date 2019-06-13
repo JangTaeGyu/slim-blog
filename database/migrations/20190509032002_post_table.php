@@ -8,7 +8,6 @@ class PostTable extends Migration
         $this->schema->create('posts', function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->increments('id');
             $table->integer('category_id')->nullable()->unsigned();
-            $table->string('slug')->unique();
             $table->string('title');
             $table->string('image')->nullable();
             $table->text('body');

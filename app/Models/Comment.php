@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Comment extends Model
 {
@@ -44,7 +45,7 @@ class Comment extends Model
         return $this->belongsTo(Notice::class, 'target_id', 'id');
     }
 
-    public function scopeTargetTitle($query)
+    public function scopeTargetTitle(Builder $query)
     {
         return $query->select('*')->selectRaw("
             case

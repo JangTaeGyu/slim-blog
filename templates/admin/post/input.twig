@@ -1,0 +1,83 @@
+{% extends "layout/admin_app.twig" %}
+
+{% set title = post ? '수정하기' : '글 쓰기' %}
+
+{% block title %} :: {{ title }}{% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div class="top">
+            <h2>{{ title }}<small></small></h2>
+        </div>
+
+        <div class="form-box bg">
+        {% if post %}
+            {{ form_open('PUT', { action: path_for('blog.admin.post.update', { post_id: post.id }), enctype: 'multipart/form-data' }) }}
+        {% else %}
+            {{ form_open('POST', { action: path_for('blog.admin.post.store'), enctype: 'multipart/form-data' }) }}
+        {% endif %}
+
+                {{ csrf_input() }}
+
+                <div class="form-group">
+                    <label for="category_id"><i class="fas fa-angle-double-right"></i>카테고리</label>
+                    <select name="category_id" class="form-control">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {{ category.id == old.category_id or category.id == post.category_id ? 'selected'}}>
+                            {{ category.parent_id is null ? '' : '&nbsp;&nbsp;&nbsp;&nbsp;' }}{{ category.name }}
+                        </option>
+                    {% endfor %}
+                    </select>
+                    {% if errors.category_id %}
+                        <small class="error">{{ errors.category_id | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="image"><i class="fas fa-image"></i>이미지</label>
+                    <input type="file" name="image" id="image" class="form-control" placeholder="이미지를 선택해 주세요.">
+                    {% if post.image %}
+                        <a href="{{ post.image }}" class="btn small block concrete" target="_blank">업로드 이미지 새창으로 보기</a>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="title"><i class="fas fa-heading"></i>제목</label>
+                    <input type="text" name="title" id="title" class="form-control" value="{{ old.title ? old.title : post.title }}" placeholder="제목을 입력해 주세요.">
+                    {% if errors.title %}
+                        <small class="error">{{ errors.title | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="body"><i class="fas fa-font"></i>내용</label>
+                    <textarea name="body" class="form-control border h-200">{{ old.body ? old.body : post.body }}</textarea>
+                    {% if errors.body %}
+                        <small class="error">{{ errors.body | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="accept_commnet"><i class="fas fa-comment"></i>권한</label>
+                    <select name="accept_commnet" id="accept_commnet" class="form-control">
+                        <option value="0" {{ old.accept_commnet == 0 or post.accept_commnet == 0 ? 'selected' }}>댓글 비허용</option>
+                        <option value="1" {{ old.accept_commnet == 1 or post.accept_commnet == 1 ? 'selected' }}>댓글 허용</option>
+                    </select>
+                    {% if errors.accept_commnet %}
+                        <small class="error">{{ errors.accept_commnet | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="approved"><i class="fas fa-check"></i>승인</label>
+                    <select name="approved" id="approved" class="form-control">
+                        <option value="0" {{ old.approved == 0 or post.approved == 0 ? 'selected' }}>비공개</option>
+                        <option value="1" {{ old.approved == 1 or post.approved == 1 ? 'selected' }}>공개</option>
+                    </select>
+                    {% if errors.approved %}
+                        <small class="error">{{ errors.approved | first }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group text-center">
+                    <a href="{{ path_for('blog.admin.post.index') }}" class="btn clouds">취소하기</a>
+                    <button type="submit" class="btn peter-river">저장하기</button>
+                </div>
+            {{ form_close() }}
+        </div>
+    </div>
+{% endblock %}

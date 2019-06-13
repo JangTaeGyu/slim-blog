@@ -1,0 +1,96 @@
+{% extends "layout/admin_app.twig" %}
+
+{% set title = '글 관리' %}
+{% set csrf_input = csrf_input() %}
+
+{% block title %} :: {{ title }}{% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div class="top">
+            <h2>{{ title }}<small>{{ posts.total | number_format }} 건</small></h2>
+            <div class="link">
+                <a href="{{ path_for('blog.admin.post.create') }}">글 쓰기</a>
+            </div>
+        </div>
+
+        <div class="search-box bg">
+            {{ form_open('GET', { action: path_for('blog.admin.post.index') }) }}
+                <div class="search-field">
+                    <select name="category_id" class="form-control">
+                        <option value="">카테고리 선택</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {{ category.id == params.category_id ? 'selected'}}>
+                            {{ category.parent_id is null ? '' : '&nbsp;&nbsp;&nbsp;&nbsp;' }}{{ category.name }}
+                        </option>
+                    {% endfor %}
+                    </select>
+
+                    <select name="field" class="form-control">
+                        <option value="">선택</option>
+                        <option value="title" {{ params.field == 'title' ? 'selected'}}>제목</option>
+                        <option value="content" {{ params.field == 'content' ? 'selected'}}>내용</option>
+                    </select>
+                </div>
+                <div class="search-word">
+                    <input type="text" name="word" class="form-control w-500" value="{{ params.word }}" placeholder="검색어를 입력해 주세요.">
+                </div>
+                <div class="search-btn">
+                    <button type="submit" class="btn"><i class="fas fa-search"></i></button>
+                </div>
+            {{ form_close() }}
+        </div>
+
+        <div class="border-list bg">
+        {% if posts.total == 0 %}
+            <p class="text-none">글이 없습니다.</p>
+        {% else %}
+            <ul>
+            {% for post in posts %}
+                <li class="{{ post.approved == 0 ? 'bg-first-date' }}">
+                    <div class="border-content">
+                        <div class="text">
+                            <a href="javascript:void(0)">{{ post.title }}</a>
+                        </div>
+                        <div class="info">
+                            <span class="info-name">{{ post.category_name }}</span>
+                            <span class="info-hit" title="조회수"><i class="far fa-eye"></i>{{ post.hit | number_format }}</span>
+                            <span class="info-count"  title="댓글수"><i class="fas fa-comment"></i>{{ post.count | number_format }}</span>
+                            <span class="info-date">{{ post.created_at }}</span>
+                        </div>
+                    </div>
+                    <div class="border-btn">
+                        {{ form_open('GET', { action: path_for('blog.admin.post.edit', { post_id: post.id }) }) }}
+                            <button type="submit" class="btn small link">수정하기</button>
+                        {{ form_close() }}
+
+                        {{ form_open('DELETE', { action: path_for('blog.admin.post.destroy', { post_id: post.id }), onsubmit: 'return fnConfirm()' }) }}
+                            {{ csrf_input | raw }}
+                            <button type="submit" class="btn small link">삭제하기</button>
+                        {{ form_close() }}
+
+                        {{ form_open('PUT', { action: path_for('blog.admin.post.update.approved', { post_id: post.id }) }) }}
+                            {{ csrf_input | raw }}
+                            <input type="hidden" name="approved" value="{{ post.approved == 0 ? 1 : 0 }}">
+                            <button type="submit" class="btn small link">{{ post.approved == 0 ? '공개하기' : '비공개하기' }}</button>
+                        {{ form_close() }}
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </div>
+
+        <div class="bottom">
+            {{ notices.links('pagination/default.twig') | raw }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        function fnConfirm() {
+            return confirm("삭제하시면 복구가 불가능 합니다.\n정말로 삭제 하시겠습니까?");
+        }
+    </script>
+{% endblock %}
